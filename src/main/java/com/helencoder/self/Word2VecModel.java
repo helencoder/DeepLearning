@@ -29,7 +29,7 @@ public class Word2VecModel {
      * @param filePath 待训练文本路径
      * @param modelPath  训练模型存储路径
      */
-    public void train(String filePath, String modelPath) throws Exception {
+    public static void train(String filePath, String modelPath) throws Exception {
 
         SentenceIterator iter = new BasicLineIterator(filePath);
         TokenizerFactory t = new DefaultTokenizerFactory();
@@ -57,6 +57,7 @@ public class Word2VecModel {
         vec.fit();
 
         WordVectorSerializer.writeWord2VecModel(vec, modelPath);
+        //WordVectorSerializer.writeWordVectors(vec.lookupTable(), modelPath);
     }
 
     /**
@@ -64,7 +65,7 @@ public class Word2VecModel {
      *
      * @param modelPath 训练模型存储路径
      */
-    public Word2Vec load(String modelPath) {
+    public static Word2Vec load(String modelPath) {
 
         Word2Vec word2Vec = WordVectorSerializer.readWord2VecModel(modelPath);
         return word2Vec;
@@ -76,7 +77,7 @@ public class Word2VecModel {
      * @param filePath 待训练文本路径
      * @param modelPath 训练模型存储路径
      */
-    public void update(String filePath, String modelPath) throws Exception {
+    public static void update(String filePath, String modelPath) throws Exception {
 
         Word2Vec word2Vec = WordVectorSerializer.readWord2VecModel(modelPath);
 
@@ -97,7 +98,7 @@ public class Word2VecModel {
      *
      * @param modelPath 训练模型存储路径
      */
-    public void apply(String modelPath) {
+    public static void apply(String modelPath) {
         Word2Vec word2Vec = WordVectorSerializer.readWord2VecModel(modelPath);
 
         // get the boolean of include the word

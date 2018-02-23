@@ -23,18 +23,13 @@ import java.io.File;
  */
 public class Doc2Vec {
 
-    public static void main(String[] args) {
-
-    }
-
-
     /**
      * doc2vec模型训练
      *
      * @param filePath 待训练文本路径
      * @param modelPath  训练模型存储路径
      */
-    public void train(String filePath, String modelPath) throws Exception {
+    public static void train(String filePath, String modelPath) throws Exception {
         SentenceIterator iter = new BasicLineIterator(new File(filePath));
 
         AbstractCache<VocabWord> cache = new AbstractCache<>();
@@ -73,7 +68,7 @@ public class Doc2Vec {
      *
      * @param modelPath 训练模型存储路径
      */
-    public ParagraphVectors load(String modelPath) throws Exception {
+    public static ParagraphVectors load(String modelPath) throws Exception {
 
         ParagraphVectors paragraphVectors = WordVectorSerializer.readParagraphVectors(modelPath);
         return paragraphVectors;
@@ -85,7 +80,7 @@ public class Doc2Vec {
      * @param filePath 待训练文本路径
      * @param modelPath 训练模型存储路径
      */
-    public void update(String filePath, String modelPath) throws Exception {
+    public static void update(String filePath, String modelPath) throws Exception {
 
         ParagraphVectors doc2vec = WordVectorSerializer.readParagraphVectors(modelPath);
 
@@ -106,7 +101,7 @@ public class Doc2Vec {
      *
      * @param modelPath 训练模型存储路径
      */
-    public void apply(String modelPath) throws Exception {
+    public static void apply(String modelPath) throws Exception {
         ParagraphVectors doc2vec = WordVectorSerializer.readParagraphVectors(modelPath);
 
         // get the boolean of include the doc
