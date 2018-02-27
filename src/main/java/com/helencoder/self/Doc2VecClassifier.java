@@ -34,7 +34,7 @@ public class Doc2VecClassifier {
 
     public static void run() throws Exception {
         // 构建doc2Vec模型
-        ClassPathResource resource = new ClassPathResource("paravec/labeled");
+        ClassPathResource resource = new ClassPathResource("Doc2Vec/labeled");
 
         // build a iterator for our dataset
         LabelAwareIterator iterator = new FileLabelAwareIterator.Builder()
@@ -59,7 +59,7 @@ public class Doc2VecClassifier {
         paragraphVectors.fit();
 
         // 样本预测
-        ClassPathResource unClassifiedResource = new ClassPathResource("paravec/unlabeled");
+        ClassPathResource unClassifiedResource = new ClassPathResource("Doc2Vec/unlabeled");
         FileLabelAwareIterator unClassifiedIterator = new FileLabelAwareIterator.Builder()
                 .addSourceFolder(unClassifiedResource.getFile())
                 .build();
@@ -70,17 +70,38 @@ public class Doc2VecClassifier {
         LabelSeeker seeker = new LabelSeeker(iterator.getLabelsSource().getLabels(),
                 (InMemoryLookupTable<VocabWord>) paragraphVectors.getLookupTable());
 
+        int fileCount = 0;
+        int corCount = 0;
         while (unClassifiedIterator.hasNextDocument()) {
+            fileCount++;
             LabelledDocument document = unClassifiedIterator.nextDocument();
             INDArray documentAsCentroid = meansBuilder.documentAsVector(document);
             List<Pair<String, Double>> scores = seeker.getScores(documentAsCentroid);
 
+//            System.out.println("Document '" + document.getLabels() + "' falls into the following categories: ");
+//            for (Pair<String, Double> score: scores) {
+//                System.out.println("        " + score.getFirst() + ": " + score.getSecond());
+//            }
+
+            String label = "";
+            double flag = 0;
             System.out.println("Document '" + document.getLabels() + "' falls into the following categories: ");
             for (Pair<String, Double> score: scores) {
                 System.out.println("        " + score.getFirst() + ": " + score.getSecond());
+                if (score.getSecond() > flag) {
+                    flag = score.getSecond();
+                    label = score.getFirst();
+                }
             }
+
+            System.out.println("Document '" + document.getLabels() + "' predict to be: " + label);
+            if (document.getLabels().get(0).equals(label)) {
+                corCount++;
+            }
+
         }
 
+        System.out.println("文本总数为: " + fileCount + " 预测正确文本数: " + corCount);
 
     }
 
