@@ -48,8 +48,8 @@ public class Doc2VecClassifier {
         ParagraphVectors paragraphVectors = new ParagraphVectors.Builder()
                 .learningRate(0.025)
                 .minLearningRate(0.001)
-                .batchSize(1000)
-                .epochs(20)
+                .batchSize(100)
+                .epochs(1000)
                 .iterate(iterator)
                 .trainWordVectors(true)
                 .tokenizerFactory(tokenizerFactory)
@@ -104,6 +104,5 @@ public class Doc2VecClassifier {
         System.out.println("文本总数为: " + fileCount + " 预测正确文本数: " + corCount);
 
     }
-
 
 }

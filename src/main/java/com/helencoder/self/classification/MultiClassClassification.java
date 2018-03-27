@@ -1,11 +1,12 @@
 package com.helencoder.self.classification;
 
-import com.helencoder.self.Word2VecModel;
+import com.helencoder.self.Doc2Vec;
 import com.helencoder.self.util.NewsIterator;
 import org.datavec.api.util.ClassPathResource;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
+import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.GradientNormalization;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -23,7 +24,11 @@ import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 多类别分类
@@ -47,7 +52,9 @@ public class MultiClassClassification {
         String classFilePath = classPathResource + "LabelledNews";
 
         // 方案验证
-        word2vecLstm(filePath);
+        //word2vecLstm(filePath);
+
+        doc2vecLstm("docLstm.model");
 
     }
 
@@ -60,7 +67,7 @@ public class MultiClassClassification {
         //Word2VecModel.train(filePath, modelPath);
 
         // 进行模型构建
-        String userDirectory = new ClassPathResource("NewsData").getFile().getAbsolutePath() + File.separator;
+        String userDirectory = new ClassPathResource("DengTaData").getFile().getAbsolutePath() + File.separator;
         String DATA_PATH = userDirectory + "LabelledNews";
 
         int batchSize = 50;     //Number of examples in each minibatch
@@ -135,9 +142,32 @@ public class MultiClassClassification {
     }
 
     /**
-     * doc2vec +lstm
+     * doc2vec classification
      */
-    public static void doc2vecLstm() {
+    public static void doc2vecLstm(String modelPath) throws Exception {
+        // 训练doc2vec模型
+        String vectorPath = "dengtaDoc.model";
+        //Doc2Vec.train(filePath, modelPath);
+
+        // 进行模型构建
+        String userDirectory = new ClassPathResource("DengTaData").getFile().getAbsolutePath() + File.separator;
+        String DATA_PATH = userDirectory + "LabelledNews";
+        String dataPath = userDirectory + "data.txt";
+
+        // 加载训练好的Doc2Vec模型
+        ParagraphVectors vectors = Doc2Vec.load(vectorPath);
+
+        // Doc2Vec模型对应关系
+        List<String> fileList = getFileDataByLine(dataPath);
+        Map<String, double[]> fileVecMap = new HashMap<>();
+        int count = 0;
+        for (String file : fileList) {
+            String tag = "DOC_" + count;
+            fileVecMap.put(file, vectors.getWordVector(tag));
+            count++;
+        }
+
+
 
     }
 
@@ -146,6 +176,26 @@ public class MultiClassClassification {
      */
     public static void lpa() {
 
+    }
+
+
+    // get the file data by line
+    public static List<String> getFileDataByLine(String filepath) {
+        List<String> fileDataList = new ArrayList<String>();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                // handle
+                if (line.length() != 0) {
+                    fileDataList.add(line);
+                }
+            }
+            br.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return fileDataList;
     }
 
 }
